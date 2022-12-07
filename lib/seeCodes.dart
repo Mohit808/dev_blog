@@ -23,7 +23,7 @@ class _SeeCodesState extends State<SeeCodes> {
   }
 
   abcd() async {
-    var request=await http.read(Uri.parse('https://rajularar0.pythonanywhere.com/getDevBogSinglePostData/${widget.uniqueKeys}'));
+    var request=await http.read(Uri.parse('https://amityadavayx.pythonanywhere.com/getDevBlogSinglePostData/${widget.uniqueKeys}'));
     list=jsonDecode(request);
     print("liiiiiiii $list");
     setState(() {

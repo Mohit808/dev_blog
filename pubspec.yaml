@@ -32,7 +32,7 @@ dependencies:
 
   code_text_field: ^1.0.2
   flutter_highlight: ^0.7.0
-  syntax_highlighter: ^0.1.1
+#  syntax_highlighter: ^0.1.1
   http: ^0.13.4
   random_string: ^2.3.1
 

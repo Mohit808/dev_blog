@@ -14,7 +14,7 @@ import 'package:flutter_highlight/themes/github.dart';
 import 'package:flutter_highlight/themes/googlecode.dart';
 import 'package:highlight/languages/dart.dart';
 import 'package:flutter_highlight/themes/monokai-sublime.dart';
-import 'package:syntax_highlighter/syntax_highlighter.dart';
+// import 'package:syntax_highlighter/syntax_highlighter.dart';
 import 'package:http/http.dart' as http;
 import 'package:random_string/random_string.dart';
 
@@ -29,7 +29,7 @@ class _CreatePageState extends State<CreatePage> {
   late CodeController _codeController;
   TextEditingController messageController=TextEditingController();
   List<String> list=[];
-  late SyntaxHighlighterStyle style = Theme.of(context).brightness == Brightness.dark ? SyntaxHighlighterStyle.darkThemeStyle() : SyntaxHighlighterStyle.lightThemeStyle();
+  // late SyntaxHighlighterStyle style = Theme.of(context).brightness == Brightness.dark ? SyntaxHighlighterStyle.darkThemeStyle() : SyntaxHighlighterStyle.lightThemeStyle();
   bool altPressed=false;
   TextEditingController textEditingControllerTitle=TextEditingController();
 
@@ -41,7 +41,7 @@ class _CreatePageState extends State<CreatePage> {
 
   abcd() async {
     print(list.length);
-    var url = Uri.parse('https://rajularar0.pythonanywhere.com/devBogFunc/');
+    var url = Uri.parse('https://amityadavayx.pythonanywhere.com/devBlogFunc/');
     var map={};
     for(int i=0;i<list.length;i++){
       map['$i']=list[i];
@@ -97,7 +97,6 @@ class _CreatePageState extends State<CreatePage> {
                     list.add(_codeController.rawText);
                     _codeController.text="";
                     setState(() {
-
                     });
                   }
                   return KeyEventResult.handled;
@@ -110,7 +109,7 @@ class _CreatePageState extends State<CreatePage> {
                 }
                 return KeyEventResult.ignored;
               }),
-                  child: CodeField(controller: _codeController,)),
+                  child: CodeField(background: Colors.blueGrey,controller: _codeController,)),
               ListView.builder(shrinkWrap: true,primary: false,itemCount: list.length,itemBuilder: (BuildContext context,int index){
                 return Container(padding: EdgeInsets.all(16),margin: EdgeInsets.only(top: 16),color: Colors.white,child:
                 Stack(
