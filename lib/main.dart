@@ -67,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // Uri.parse('http://164.92.74.152/api'),
       );
       list = jsonDecode(request.body);
+      list=list.reversed.toList();
       setState(() {});
     }catch(e){}
     _refreshController.refreshCompleted();

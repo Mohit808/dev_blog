@@ -55,7 +55,7 @@ class _CreatePageState extends State<CreatePage> {
       map['$i']=list[i];
     }
     if(_codeController.text.isNotEmpty){
-      map[map.length]=_codeController.text;
+      map['${map.length}']=_codeController.text;
     }
     map['count']='${map.length}';
     map['uniqueKeys']=randomAlphaNumeric(10).toString();
@@ -129,7 +129,7 @@ class _CreatePageState extends State<CreatePage> {
                   return KeyEventResult.ignored;
                 }),
                     child: CodeField(background: Colors.blueGrey,controller: _codeController,)),
-                ListView.builder(shrinkWrap: true,primary: false,itemCount: list.length,itemBuilder: (BuildContext context,int index){
+                ListView.builder(reverse: true,shrinkWrap: true,primary: false,itemCount: list.length,itemBuilder: (BuildContext context,int index){
                   return Container(padding: EdgeInsets.all(16),margin: EdgeInsets.only(top: 16),color: Colors.white,child:
                   Stack(
                     children: [
