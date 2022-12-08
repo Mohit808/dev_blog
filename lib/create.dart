@@ -65,6 +65,7 @@ class _CreatePageState extends State<CreatePage> {
     // var response = await http.post(url, body: {'title': textEditingControllerTitle.text, 'code': list.toSet().toString()});
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
+    Navigator.of(context).pop();
   }
 
 

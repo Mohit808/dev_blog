@@ -52,43 +52,16 @@ class _SeeCodesState extends State<SeeCodes> {
               Icons.arrow_back_rounded,
               color: Colors.black,
             )),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(
-              child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(5)),
-                  padding: EdgeInsets.all(0),
-                  child: TextField(
-                    // autofocus: false,
-                    decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "Search posts",
-                        prefixIcon: Icon(
-                          Icons.search,
-                          color: Colors.black,
-                        ),
-                        suffixIcon: Icon(Icons.info_outline)),
-                  )),
-            ),
-          ],
-        ),
-        actions: [
-          Icon(
-            Icons.account_circle,
-            color: Colors.black,
-            size: 40,
-          ),
-          SizedBox(width: 16,)
-        ],
+        title:
+        Text(list.isEmpty?'':list[0]['title'],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 24,color: Colors.black),),
       ),
       body: ListView.builder(shrinkWrap: true,primary: false,itemCount: list.length,itemBuilder: (BuildContext context,int index){
-        return index==0?Padding(
-          padding: const EdgeInsets.only(left: 24.0,right: 24,top: 24),
-          child: Text(list[index]['title'],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 24),),
-        )
+        return index==0?SizedBox(height: 16,)
+
+        // Padding(
+        //   padding: const EdgeInsets.only(left: 24.0,right: 24,top: 24),
+        //   child: Text(list[index]['title'],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 24),),
+        // )
             :Padding(
               padding: const EdgeInsets.only(left: 24.0,right: 24),
               child: Container(padding: EdgeInsets.all(16),margin: EdgeInsets.only(bottom: 16),color: Colors.white,child:
