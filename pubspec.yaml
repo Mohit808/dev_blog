@@ -28,8 +28,17 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
 
+  code_text_field: ^1.1.0
+  cupertino_icons: ^1.0.5
+  firebase_auth: ^4.2.0
+  firebase_core: ^2.4.0
   flutter:
     sdk: flutter
+  flutter_highlight: ^0.7.0
+  http: ^0.13.5
+  pull_to_refresh: ^2.0.0
+  random_string: ^2.3.1
+  search_page: ^2.2.0
 
 #  code_text_field: ^1.0.2
 #  flutter_highlight: ^0.7.0
@@ -43,7 +52,7 @@ dependencies:
 #  cupertino_icons: ^1.0.2
 #  pull_to_refresh: ^2.0.0
 #  search_page: ^2.0.0
-  firebase_core: ^2.4.0
+#  firebase_core: ^2.4.0
 #  firebase_auth: ^0.6.2+1
 
 
