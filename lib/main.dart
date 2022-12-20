@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:dev_blog/create.dart';
 import 'package:dev_blog/seeCodes.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,7 +13,8 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
+  Admob.initialize();
+  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
   runApp(const MyApp());
 
   HttpOverrides.global = MyHttpOverrides();
@@ -50,7 +52,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
   List list = [];
   List listSearch = [];
   bool isSearchOpen=false;
@@ -61,6 +63,67 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     getData();
+    late AdmobInterstitial interstitialAd;
+    interstitialAd = AdmobInterstitial(
+      adUnitId: getInterstitialAdUnitId()!,
+      listener: (AdmobAdEvent event, Map<String, dynamic>? args) {
+        if (event == AdmobAdEvent.closed) interstitialAd.load();
+        handleEvent(event, args, 'Interstitial');
+      },
+    );
+
+    interstitialAd.load();
+  }
+
+  String? getInterstitialAdUnitId() {
+    if (Platform.isIOS) {
+      return 'ca-app-pub-3940256099942544/4411468910';
+    } else if (Platform.isAndroid) {
+      return 'ca-app-pub-3940256099942544/1033173712';
+    }
+    return null;
+  }
+
+  void handleEvent(
+      AdmobAdEvent event, Map<String, dynamic>? args, String adType) {
+    switch (event) {
+      case AdmobAdEvent.loaded:
+        // showSnackBar('New Admob $adType Ad loaded!');
+        break;
+      case AdmobAdEvent.opened:
+        // showSnackBar('Admob $adType Ad opened!');
+        break;
+      case AdmobAdEvent.closed:
+        // showSnackBar('Admob $adType Ad closed!');
+        break;
+      case AdmobAdEvent.failedToLoad:
+        // showSnackBar('Admob $adType failed to load. :(');
+        break;
+      case AdmobAdEvent.rewarded:
+        showDialog(
+          context: scaffoldState.currentContext!,
+          builder: (BuildContext context) {
+            return WillPopScope(
+              onWillPop: () async {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                return true;
+              },
+              child: AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text('Reward callback fired. Thanks Andrew!'),
+                    Text('Type: ${args!['type']}'),
+                    Text('Amount: ${args['amount']}'),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+        break;
+      default:
+    }
   }
 
   getData() async {
@@ -278,13 +341,13 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement build
     print(" MediaQuery.of(context).size.width ${MediaQuery.of(context).size.width}");
     return Scaffold(
-      key: _scaffoldKey,
+      key: scaffoldState,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
         leading: InkWell(
             onTap: () {
-              _scaffoldKey.currentState!.openDrawer();
+              scaffoldState.currentState!.openDrawer();
 
               if (sideWidth == 0) {
                 sideWidth = 300;
