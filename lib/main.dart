@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:dev_blog/create.dart';
 import 'package:dev_blog/seeCodes.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart' as http;
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -13,7 +12,9 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Admob.initialize();
+  MobileAds.instance.initialize();
+  RequestConfiguration configuration = RequestConfiguration(testDeviceIds: ["BD63D42C3311C2095B8701125F983BCF"]);
+  MobileAds.instance.updateRequestConfiguration(configuration);
   // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
   runApp(const MyApp());
 
@@ -63,68 +64,38 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     getData();
-    late AdmobInterstitial interstitialAd;
-    interstitialAd = AdmobInterstitial(
-      adUnitId: getInterstitialAdUnitId()!,
-      listener: (AdmobAdEvent event, Map<String, dynamic>? args) {
-        if (event == AdmobAdEvent.closed) interstitialAd.load();
-        handleEvent(event, args, 'Interstitial');
-      },
+    _loadInteristial();
+    _loadBannerAd();
+  }
+
+  bool _isBannerAdReady = false;
+  late BannerAd _bannerAd;
+
+
+  void _loadInteristial(){
+    RewardedInterstitialAd.load(adUnitId: "ca-app-pub-3940256099942544/1033173712", request: AdRequest(), rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(onAdLoaded: (onAdLoaded){}, onAdFailedToLoad: (onAdFailedToLoad){}));
+  }
+  void _loadBannerAd() {
+    _bannerAd = BannerAd(
+      adUnitId: "ca-app-pub-3940256099942544/6300978111",
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          setState(() {
+            _isBannerAdReady = true;
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          _isBannerAdReady = false;
+          ad.dispose();
+        },
+      ),
     );
 
-    interstitialAd.load();
+    _bannerAd.load();
   }
 
-  String? getInterstitialAdUnitId() {
-    if (Platform.isIOS) {
-      return 'ca-app-pub-3940256099942544/4411468910';
-    } else if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/1033173712';
-    }
-    return null;
-  }
-
-  void handleEvent(
-      AdmobAdEvent event, Map<String, dynamic>? args, String adType) {
-    switch (event) {
-      case AdmobAdEvent.loaded:
-        // showSnackBar('New Admob $adType Ad loaded!');
-        break;
-      case AdmobAdEvent.opened:
-        // showSnackBar('Admob $adType Ad opened!');
-        break;
-      case AdmobAdEvent.closed:
-        // showSnackBar('Admob $adType Ad closed!');
-        break;
-      case AdmobAdEvent.failedToLoad:
-        // showSnackBar('Admob $adType failed to load. :(');
-        break;
-      case AdmobAdEvent.rewarded:
-        showDialog(
-          context: scaffoldState.currentContext!,
-          builder: (BuildContext context) {
-            return WillPopScope(
-              onWillPop: () async {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                return true;
-              },
-              child: AlertDialog(
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text('Reward callback fired. Thanks Andrew!'),
-                    Text('Type: ${args!['type']}'),
-                    Text('Amount: ${args['amount']}'),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-        break;
-      default:
-    }
-  }
 
   getData() async {
     try{
@@ -411,7 +382,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       drawer: MediaQuery.of(context).size.width < 800?Drawer(child: SafeArea(child: myDrawer(),),):null,
-      body: SmartRefresher(
+      body:
+      SmartRefresher(
         controller: _refreshController,
         enablePullDown: true,
         onRefresh: _onRefresh,
@@ -459,7 +431,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           top: 16, bottom: 16, left: 24, right: 24),
                                       margin: EdgeInsets.only(right: 16),
                                       child: Text(
-                                        list[index]['title'][0],
+                                        list[index]['title'][0].toString().toLowerCase(),
                                         style: TextStyle(fontSize: 24),
                                       )),
                                   Expanded(
@@ -468,12 +440,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
-                                              list[index]['title'],
-                                              style: TextStyle(fontSize: 18),
+                                            Expanded(
+                                              child: Text(
+                                                list[index]['title'],
+                                                style: TextStyle(fontSize: 18),
+                                              ),
                                             ),
                                             Row(mainAxisSize: MainAxisSize.min,
                                               children: [
@@ -552,7 +527,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     trailing: Text(listSearch[index]['uniqueKeys']),
                   ),
                 );
-              }),)
+              }),),
+            Container(
+                child: _isBannerAdReady
+                    ? Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    width: _bannerAd.size.width.toDouble(),
+                    height: _bannerAd.size.height.toDouble(),
+                    child: AdWidget(ad: _bannerAd),
+                  ),
+                )
+                    : const SizedBox(height: 0,width: 0,))
           ],
         ),
       ),
